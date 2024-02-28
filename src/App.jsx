@@ -11,6 +11,10 @@ import { NewProducts } from './components/NewProducts'
 import { Users } from './components/Users'
 import { UserDetails } from './components/UserDetails'
 import { Admin } from './components/Admin'
+import { AuthProvider } from './components/auth'
+import { Login } from './components/Login'
+import { RequireAuth } from './components/RequireAuth'
+import { Profile } from './components/Profile'
 
 const LazyAbout = React.lazy(() => import('./components/About'))
 
@@ -18,29 +22,39 @@ function App() {
 
   return (
     <>
-    <Navbar />
-      <Routes>
-        <Route path='/' element={<Home />} />
-        {/* <Route path='about' element={<About />} /> */}
-        <Route path='about'
-          element={
-            <React.Suspense fallback='Loading...'>
-              <LazyAbout />
-            </React.Suspense>
-          }
-        />
-        <Route path='order-summary' element={<OrderSummary />} />
-        <Route path='products' element={<Products />}>
-          <Route index element={<NewProducts />} />
-          <Route path='featured' element={<FeaturedProducts />} />
-          <Route path='new' element={<NewProducts />} />
-        </Route>
-        <Route path='users' element={<Users />} >
-          <Route path=':userId' element={<UserDetails />} />
-          <Route path='admin' element={<Admin />} />
-        </Route>
-        <Route path='*' element={<NoMatch />} />
-      </Routes>
+    <AuthProvider>
+      <Navbar />
+        <Routes>
+          <Route path='/' element={<Home />} />
+          <Route path='/login' element={<Login />} />
+          <Route path='/profile'
+            element={
+              <RequireAuth>
+                <Profile />
+              </RequireAuth>
+              }
+            />
+          {/* <Route path='about' element={<About />} /> */}
+          <Route path='about'
+            element={
+              <React.Suspense fallback='Loading...'>
+                <LazyAbout />
+              </React.Suspense>
+            }
+          />
+          <Route path='order-summary' element={<OrderSummary />} />
+          <Route path='products' element={<Products />}>
+            <Route index element={<NewProducts />} />
+            <Route path='featured' element={<FeaturedProducts />} />
+            <Route path='new' element={<NewProducts />} />
+          </Route>
+          <Route path='users' element={<Users />} >
+            <Route path=':userId' element={<UserDetails />} />
+            <Route path='admin' element={<Admin />} />
+          </Route>
+          <Route path='*' element={<NoMatch />} />
+        </Routes>
+      </AuthProvider>
     </>
   )
 }
